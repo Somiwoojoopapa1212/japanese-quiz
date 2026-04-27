@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🇯🇵 일본어 퀴즈</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* 공통 카드 */
+    .card {
+      background: #16213e;
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    /* 홈 화면 */
+    .mode-title {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 10px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      background: #0f3460;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 14px 10px;
+      color: #eee;
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      border-color: #e94560;
+      background: #1a1a4e;
+    }
+
+    .mode-btn .icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .count-btn {
+      background: #0f3460;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      padding: 10px;
+      color: #eee;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .count-btn.active {
+      border-color: #e94560;
+      background: #1a1a4e;
+    }
+
+    /* 통계 */
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: #0f3460;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 1.4rem; font-weight: bold; color: #e94560; }
+    .stat-label { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+
+    /* 버튼 */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #e94560, #c23152);
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .btn-primary:active { transform: scale(0.97); opacity: 0.9; }
+
+    .btn-secondary {
+      width: 100%;
+      background: #0f3460;
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      color: #eee;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: opacity 0.15s;
+    }
+
+    .btn-secondary:active { opacity: 0.7; }
+
+    /* 진행 바 */
+    .progress-wrap {
+      margin-bottom: 20px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #0f3460;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #e94560, #c23152);
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    /* 퀴즈 화면 */
+    .quiz-type-badge {
+      display: inline-block;
+      background: #0f3460;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-bottom: 16px;
+    }
+
+    .question-box {
+      background: #0f3460;
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 24px;
+      text-align: center;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .question-main {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .question-sub {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: #0f3460;
+      border: 2px solid #1a3a6e;
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: #eee;
+      font-size: 0.95rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .choice-btn:active { transform: scale(0.98); }
+    .choice-btn.correct { border-color: #2ecc71; background: #1a3a2e; color: #2ecc71; }
+    .choice-btn.wrong { border-color: #e94560; background: #3a1a2e; color: #e94560; }
+    .choice-btn.disabled { cursor: default; opacity: 0.6; }
+    .choice-btn.disabled:active { transform: none; }
+
+    /* 피드백 */
+    .feedback {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .feedback.correct { background: #1a3a2e; border: 1px solid #2ecc71; color: #2ecc71; }
+    .feedback.wrong { background: #3a1a2e; border: 1px solid #e94560; }
+    .feedback.wrong .answer { color: #2ecc71; font-weight: bold; }
+
+    .next-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #e94560, #c23152);
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 16px;
+      display: none;
+    }
+
+    /* 결과 화면 */
+    .score-circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: conic-gradient(#e94560 0deg, #e94560 var(--deg), #0f3460 var(--deg));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      position: relative;
+    }
+
+    .score-inner {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #16213e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-num { font-size: 1.8rem; font-weight: bold; color: #e94560; }
+    .score-total { font-size: 0.8rem; color: #aaa; }
+
+    .result-message {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    .result-stats {
+      display: flex;
+      justify-content: space-around;
+      background: #0f3460;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+    }
+
+    .wrong-list { margin-bottom: 20px; }
+    .wrong-title {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 10px;
+    }
+
+    .wrong-item {
+      background: #0f3460;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .wrong-item .expr { font-size: 1rem; font-weight: bold; color: #e94560; }
+    .wrong-item .mean { color: #aaa; margin-top: 2px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 홈 화면 -->
+  <div id="screen-home" class="card">
+    <h1>🇯🇵 일본어 퀴즈</h1>
+    <p class="subtitle">영화·드라마 명대사로 배우는 일본어</p>
+
+    <div class="stats" id="home-stats">
+      <div class="stat">
+        <div class="stat-num" id="stat-total">-</div>
+        <div class="stat-label">전체 표현</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-solved">0</div>
+        <div class="stat-label">푼 문제</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-best">-</div>
+        <div class="stat-label">최고 점수</div>
+      </div>
+    </div>
+
+    <p class="mode-title">퀴즈 유형</p>
+    <div class="mode-grid">
+      <button class="mode-btn active" data-mode="expr-to-mean" onclick="selectMode(this)">
+        <span class="icon">🈯</span>표현 → 뜻
+      </button>
+      <button class="mode-btn" data-mode="mean-to-expr" onclick="selectMode(this)">
+        <span class="icon">💬</span>뜻 → 표현
+      </button>
+      <button class="mode-btn" data-mode="reading" onclick="selectMode(this)">
+        <span class="icon">🔤</span>발음 맞히기
+      </button>
+      <button class="mode-btn" data-mode="random" onclick="selectMode(this)">
+        <span class="icon">🎲</span>랜덤 혼합
+      </button>
+    </div>
+
+    <p class="mode-title">문제 수</p>
+    <div class="count-grid">
+      <button class="count-btn active" data-count="10" onclick="selectCount(this)">10문제</button>
+      <button class="count-btn" data-count="20" onclick="selectCount(this)">20문제</button>
+      <button class="count-btn" data-count="0" onclick="selectCount(this)">전체</button>
+    </div>
+
+    <button class="btn-primary" onclick="startQuiz()">퀴즈 시작</button>
+  </div>
+
+  <!-- 퀴즈 화면 -->
+  <div id="screen-quiz" class="card hidden">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="quiz-progress">1 / 10</span>
+        <span id="quiz-score-live">✅ 0 &nbsp; ❌ 0</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="quiz-type-badge" id="quiz-type-badge">표현 → 뜻</div>
+
+    <div class="question-box">
+      <div class="question-main" id="question-main"></div>
+      <div class="question-sub" id="question-sub"></div>
+    </div>
+
+    <div class="choices" id="choices"></div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">다음 문제 →</button>
+  </div>
+
+  <!-- 결과 화면 -->
+  <div id="screen-result" class="card hidden">
+    <h1 style="margin-bottom:20px">📊 결과</h1>
+
+    <div class="score-circle" id="score-circle">
+      <div class="score-inner">
+        <div class="score-num" id="result-score">0</div>
+        <div class="score-total" id="result-total">/ 10</div>
+      </div>
+    </div>
+
+    <div class="result-message" id="result-message"></div>
+
+    <div class="result-stats">
+      <div class="stat">
+        <div class="stat-num" id="result-correct">0</div>
+        <div class="stat-label">정답</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="result-wrong-count">0</div>
+        <div class="stat-label">오답</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="result-rate">0%</div>
+        <div class="stat-label">정답률</div>
+      </div>
+    </div>
+
+    <div class="wrong-list" id="wrong-list"></div>
+
+    <button class="btn-primary" onclick="startQuiz()">다시 도전</button>
+    <button class="btn-secondary" onclick="showHome()">홈으로</button>
+  </div>
+
+</div>
+
+<script>
+  let sentences = [];
+  let quizItems = [];
+  let currentIdx = 0;
+  let correct = 0;
+  let wrong = 0;
+  let wrongItems = [];
+  let answered = false;
+  let selectedMode = 'expr-to-mean';
+  let selectedCount = 10;
+
+  // sentences.json 로드
+  fetch('sentences.json')
+    .then(r => r.json())
+    .then(data => {
+      sentences = data;
+      document.getElementById('stat-total').textContent = sentences.length;
+      const saved = JSON.parse(localStorage.getItem('quiz_stats') || '{}');
+      document.getElementById('stat-solved').textContent = saved.solved || 0;
+      document.getElementById('stat-best').textContent = saved.best ? saved.best + '점' : '-';
+    });
+
+  function selectMode(btn) {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMode = btn.dataset.mode;
+  }
+
+  function selectCount(btn) {
+    document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedCount = parseInt(btn.dataset.count);
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function getMode() {
+    if (selectedMode === 'random') {
+      const modes = ['expr-to-mean', 'mean-to-expr', 'reading'];
+      return modes[Math.floor(Math.random() * modes.length)];
+    }
+    return selectedMode;
+  }
+
+  function buildQuestion(sentence, mode) {
+    const distractors = shuffle(sentences.filter(s => s !== sentence)).slice(0, 3);
+    const allChoices = shuffle([sentence, ...distractors]);
+
+    if (mode === 'expr-to-mean') {
+      return {
+        badge: '표현 → 뜻',
+        main: sentence.expression,
+        sub: sentence.reading + '  /  ' + sentence.korean_reading,
+        correct: sentence.meaning,
+        choices: allChoices.map(s => s.meaning),
+      };
+    } else if (mode === 'mean-to-expr') {
+      return {
+        badge: '뜻 → 표현',
+        main: sentence.meaning,
+        sub: '출처: ' + sentence.source,
+        correct: sentence.expression,
+        choices: allChoices.map(s => s.expression),
+      };
+    } else {
+      return {
+        badge: '발음 맞히기',
+        main: sentence.expression,
+        sub: '한국어 발음을 고르세요',
+        correct: sentence.korean_reading,
+        choices: allChoices.map(s => s.korean_reading),
+      };
+    }
+  }
+
+  function startQuiz() {
+    if (sentences.length === 0) return;
+    const pool = shuffle([...sentences]);
+    const count = selectedCount === 0 ? pool.length : Math.min(selectedCount, pool.length);
+    quizItems = pool.slice(0, count).map(s => ({
+      sentence: s,
+      mode: getMode(),
+    }));
+    currentIdx = 0;
+    correct = 0;
+    wrong = 0;
+    wrongItems = [];
+    showScreen('quiz');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    answered = false;
+    const { sentence, mode } = quizItems[currentIdx];
+    const q = buildQuestion(sentence, mode);
+    const total = quizItems.length;
+
+    document.getElementById('quiz-progress').textContent = `${currentIdx + 1} / ${total}`;
+    document.getElementById('quiz-score-live').textContent = `✅ ${correct}  ❌ ${wrong}`;
+    document.getElementById('progress-fill').style.width = `${(currentIdx / total) * 100}%`;
+    document.getElementById('quiz-type-badge').textContent = q.badge;
+    document.getElementById('question-main').textContent = q.main;
+    document.getElementById('question-sub').textContent = q.sub;
+
+    const choicesEl = document.getElementById('choices');
+    choicesEl.innerHTML = '';
+    q.choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = choice;
+      btn.onclick = () => answer(btn, choice, q.correct, sentence);
+      choicesEl.appendChild(btn);
+    });
+
+    document.getElementById('feedback').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'none';
+  }
+
+  function answer(btn, chosen, correctAnswer, sentence) {
+    if (answered) return;
+    answered = true;
+
+    const allBtns = document.querySelectorAll('.choice-btn');
+    allBtns.forEach(b => b.classList.add('disabled'));
+
+    const feedback = document.getElementById('feedback');
+
+    if (chosen === correctAnswer) {
+      btn.classList.add('correct');
+      correct++;
+      feedback.className = 'feedback correct';
+      feedback.innerHTML = `✅ 정답! &nbsp; <strong>${sentence.expression}</strong> = ${sentence.meaning}`;
+    } else {
+      btn.classList.add('wrong');
+      wrong++;
+      wrongItems.push(sentence);
+      allBtns.forEach(b => {
+        if (b.textContent === correctAnswer) b.classList.add('correct');
+      });
+      feedback.className = 'feedback wrong';
+      feedback.innerHTML = `❌ 오답 &nbsp; 정답: <span class="answer">${correctAnswer}</span><br><small>${sentence.expression} — ${sentence.meaning}</small>`;
+    }
+
+    feedback.style.display = 'block';
+    document.getElementById('next-btn').style.display = 'block';
+    document.getElementById('next-btn').textContent =
+      currentIdx + 1 < quizItems.length ? '다음 문제 →' : '결과 보기';
+  }
+
+  function nextQuestion() {
+    currentIdx++;
+    if (currentIdx < quizItems.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    const total = quizItems.length;
+    const rate = Math.round((correct / total) * 100);
+    const deg = (correct / total) * 360;
+
+    document.getElementById('score-circle').style.setProperty('--deg', deg + 'deg');
+    document.getElementById('result-score').textContent = correct;
+    document.getElementById('result-total').textContent = '/ ' + total;
+    document.getElementById('result-correct').textContent = correct;
+    document.getElementById('result-wrong-count').textContent = wrong;
+    document.getElementById('result-rate').textContent = rate + '%';
+
+    const messages = [
+      [90, '🏆 완벽해요! 실력이 대단합니다!'],
+      [70, '🎉 훌륭해요! 조금만 더 하면 완벽!'],
+      [50, '👍 절반 이상 맞혔어요! 계속 도전!'],
+      [0,  '💪 아직 괜찮아요! 다시 도전해봐요!'],
+    ];
+    const msg = messages.find(([threshold]) => rate >= threshold);
+    document.getElementById('result-message').textContent = msg[1];
+
+    // 오답 목록
+    const wrongList = document.getElementById('wrong-list');
+    if (wrongItems.length > 0) {
+      wrongList.innerHTML = `<div class="wrong-title">❌ 틀린 문제 (${wrongItems.length}개)</div>` +
+        wrongItems.map(s => `
+          <div class="wrong-item">
+            <div class="expr">${s.expression}</div>
+            <div class="mean">${s.korean_reading} · ${s.meaning}</div>
+          </div>`).join('');
+    } else {
+      wrongList.innerHTML = '';
+    }
+
+    // 통계 저장
+    const saved = JSON.parse(localStorage.getItem('quiz_stats') || '{}');
+    saved.solved = (saved.solved || 0) + total;
+    if (!saved.best || rate > saved.best) saved.best = rate;
+    localStorage.setItem('quiz_stats', JSON.stringify(saved));
+
+    showScreen('result');
+  }
+
+  function showHome() {
+    const saved = JSON.parse(localStorage.getItem('quiz_stats') || '{}');
+    document.getElementById('stat-solved').textContent = saved.solved || 0;
+    document.getElementById('stat-best').textContent = saved.best ? saved.best + '점' : '-';
+    showScreen('home');
+  }
+
+  function showScreen(name) {
+    ['home', 'quiz', 'result'].forEach(s => {
+      document.getElementById('screen-' + s).classList.toggle('hidden', s !== name);
+    });
+  }
+</script>
+</body>
+</html>
