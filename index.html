@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🇯🇵 일본어 퀴즈</title>
   <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#FF6B35">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="일본어 퀴즈">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -180,6 +186,57 @@
     }
 
     /* 퀴즈 화면 */
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .quit-btn {
+      background: #FFF5EE;
+      border: 1.5px solid #FFD9C0;
+      border-radius: 10px;
+      padding: 6px 12px;
+      color: #B07050;
+      font-family: 'Jua', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quit-btn:hover { background: #FFE8D6; border-color: #FF6B35; color: #FF6B35; }
+
+    /* 중단 확인 모달 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal h3 { font-size: 1.1rem; margin-bottom: 10px; color: #3D2B1F; }
+    .modal p { font-size: 0.88rem; color: #B07050; margin-bottom: 20px; }
+
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btns button { flex: 1; padding: 12px; border-radius: 12px; font-family: 'Jua', sans-serif; font-size: 0.95rem; cursor: pointer; border: none; }
+    .modal-continue { background: linear-gradient(135deg, #FF6B35, #FF8C5A); color: #fff; }
+    .modal-quit { background: #FFF5EE; border: 1.5px solid #FFD9C0 !important; color: #B07050; }
+
     .quiz-type-badge {
       display: inline-block;
       background: #FFF0E8;
@@ -390,12 +447,28 @@
     <button class="btn-primary" onclick="startQuiz()">퀴즈 시작 🚀</button>
   </div>
 
+  <!-- 중단 확인 모달 -->
+  <div class="modal-overlay hidden" id="quit-modal">
+    <div class="modal">
+      <h3>퀴즈를 그만할까요?</h3>
+      <p>지금까지의 결과는 저장되지 않아요</p>
+      <div class="modal-btns">
+        <button class="modal-quit" onclick="confirmQuit()">그만하기</button>
+        <button class="modal-continue" onclick="closeModal()">계속하기</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 퀴즈 화면 -->
   <div id="screen-quiz" class="card hidden">
+    <div class="quiz-header">
+      <button class="quit-btn" onclick="openModal()">✕ 그만하기</button>
+      <span id="quiz-score-live" style="font-size:0.85rem; color:#B07050">✅ 0 &nbsp; ❌ 0</span>
+    </div>
     <div class="progress-wrap">
       <div class="progress-info">
         <span id="quiz-progress">1 / 10</span>
-        <span id="quiz-score-live">✅ 0 &nbsp; ❌ 0</span>
+        <span></span>
       </div>
       <div class="progress-bar">
         <div class="progress-fill" id="progress-fill" style="width:0%"></div>
@@ -414,6 +487,7 @@
     <div class="feedback" id="feedback"></div>
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">다음 문제 →</button>
   </div>
+
 
   <!-- 결과 화면 -->
   <div id="screen-result" class="card hidden">
@@ -549,6 +623,7 @@
 
     document.getElementById('quiz-progress').textContent = `${currentIdx + 1} / ${total}`;
     document.getElementById('quiz-score-live').textContent = `✅ ${correct}  ❌ ${wrong}`;
+    document.querySelector('.quiz-header #quiz-score-live') && (document.querySelector('.quiz-header #quiz-score-live').textContent = `✅ ${correct}  ❌ ${wrong}`);
     document.getElementById('progress-fill').style.width = `${(currentIdx / total) * 100}%`;
     document.getElementById('quiz-type-badge').textContent = q.badge;
     document.getElementById('question-main').textContent = q.main;
@@ -653,6 +728,24 @@
     ['home', 'quiz', 'result'].forEach(s => {
       document.getElementById('screen-' + s).classList.toggle('hidden', s !== name);
     });
+  }
+
+  function openModal() {
+    document.getElementById('quit-modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('quit-modal').classList.add('hidden');
+  }
+
+  function confirmQuit() {
+    closeModal();
+    showHome();
+  }
+
+  // 서비스워커 등록
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
   }
 </script>
 </body>
