@@ -6,6 +6,10 @@
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="110" fill="url(#bg)"/>
-  <text x="256" y="200" font-family="Arial, sans-serif" font-size="200" font-weight="bold" text-anchor="middle" fill="white" opacity="0.95">日</text>
-  <text x="256" y="390" font-family="Arial, sans-serif" font-size="100" font-weight="bold" text-anchor="middle" fill="white" opacity="0.85">Quiz</text>
+  <text x="256" y="158" font-family="Arial, sans-serif" font-size="165" font-weight="bold" text-anchor="middle" fill="white" opacity="0.95">日</text>
+  <!-- 일본 국기 -->
+  <rect x="142" y="188" width="228" height="152" rx="12" fill="white"/>
+  <circle cx="256" cy="264" r="54" fill="#BC002D"/>
+  <!-- Quiz 텍스트 -->
+  <text x="256" y="428" font-family="Arial, sans-serif" font-size="92" font-weight="bold" text-anchor="middle" fill="white" opacity="0.92">Quiz</text>
 </svg>

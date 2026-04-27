@@ -743,9 +743,21 @@
     showHome();
   }
 
-  // 서비스워커 등록
+  // 서비스워커 등록 + 업데이트 시 자동 새로고침
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    });
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
   }
 </script>
 </body>

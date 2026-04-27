@@ -1,4 +1,5 @@
-const CACHE = 'japanese-quiz-v1';
+// v:2026-04-27T00:00:00
+const CACHE = 'japanese-quiz-v:2026-04-27T00:00:00';
 const ASSETS = [
   '/japanese-quiz/',
   '/japanese-quiz/index.html',
@@ -10,8 +11,14 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then(c => c.addAll(ASSETS))
+      .then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
