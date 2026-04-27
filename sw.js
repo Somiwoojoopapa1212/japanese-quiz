@@ -1,5 +1,5 @@
-// v:2026-04-27T06:07:51
-const CACHE = 'japanese-quiz-v:2026-04-27T06:07:51';
+// v:2026-04-27T06:14:36
+const CACHE = 'japanese-quiz-v:2026-04-27T06:14:36';
 const ASSETS = [
   '/japanese-quiz/',
   '/japanese-quiz/index.html',
