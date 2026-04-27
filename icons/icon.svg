@@ -11,5 +11,5 @@
   <rect x="142" y="188" width="228" height="152" rx="12" fill="white"/>
   <circle cx="256" cy="264" r="54" fill="#BC002D"/>
   <!-- Quiz 텍스트 -->
-  <text x="256" y="428" font-family="Arial, sans-serif" font-size="92" font-weight="bold" text-anchor="middle" fill="white" opacity="0.92">Quiz</text>
+  <text x="256" y="430" font-family="Arial, sans-serif" font-size="92" font-weight="bold" text-anchor="middle" fill="white" opacity="0.92">Quiz</text>
 </svg>
